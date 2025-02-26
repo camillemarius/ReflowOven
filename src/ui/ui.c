@@ -92,43 +92,43 @@ lv_obj_t * ui_LabelPreheat5;
 lv_obj_t * ui_laPreheatTempRise;
 lv_obj_t * ui_Panel4;
 lv_obj_t * ui_Panel5;
-lv_obj_t * ui_Label21;
-lv_obj_t * ui_Image7;
+lv_obj_t * ui_LaPreheatStatus;
+lv_obj_t * ui_ImPreheatStatus;
 lv_obj_t * ui_Panel1;
 lv_obj_t * ui_PanelPreheat6;
 lv_obj_t * ui_LabelPreheat6;
 lv_obj_t * ui_laSoakTemp;
 lv_obj_t * ui_laSoakDur;
 lv_obj_t * ui_Panel2;
-lv_obj_t * ui_Label16;
-lv_obj_t * ui_Image1;
+lv_obj_t * ui_LaSoakStatus;
+lv_obj_t * ui_ImSoakStatus;
 lv_obj_t * ui_Panel7;
 lv_obj_t * ui_PanelPreheat7;
 lv_obj_t * ui_LabelPreheat7;
 lv_obj_t * ui_laRampPeakTempRise;
 lv_obj_t * ui_Panel8;
-lv_obj_t * ui_Label22;
-lv_obj_t * ui_Image2;
+lv_obj_t * ui_LaRampPeakStatus;
+lv_obj_t * ui_ImRampPeakStatus;
 lv_obj_t * ui_Panel9;
 lv_obj_t * ui_PanelPreheat8;
 lv_obj_t * ui_LabelPreheat8;
 lv_obj_t * ui_laReflowTemp;
 lv_obj_t * ui_laReflowDur;
 lv_obj_t * ui_Panel10;
-lv_obj_t * ui_Label25;
-lv_obj_t * ui_Image3;
+lv_obj_t * ui_LaReflowStatus;
+lv_obj_t * ui_ImReflowStatus;
 lv_obj_t * ui_Panel11;
 lv_obj_t * ui_PanelPreheat9;
 lv_obj_t * ui_LabelPreheat9;
 lv_obj_t * ui_laCooldownTemp;
 lv_obj_t * ui_laCooldownDur;
 lv_obj_t * ui_Panel12;
-lv_obj_t * ui_Label28;
-lv_obj_t * ui_Image5;
+lv_obj_t * ui_LaCooldownStatus;
+lv_obj_t * ui_ImCooldownStatus;
 lv_obj_t * ui_Panel13;
-void ui_event_Button3(lv_event_t * e);
-lv_obj_t * ui_Button3;
-lv_obj_t * ui_Label29;
+void ui_event_BuStartReflow(lv_event_t * e);
+lv_obj_t * ui_BuStartReflow;
+lv_obj_t * ui_BuStartReflowText;
 void ui_event_BuNewProfile(lv_event_t * e);
 lv_obj_t * ui_BuNewProfile;
 lv_obj_t * ui_Label7;
@@ -343,7 +343,7 @@ void ui_event_BuSelectProfile5(lv_event_t * e)
     }
 }
 
-void ui_event_Button3(lv_event_t * e)
+void ui_event_BuStartReflow(lv_event_t * e)
 {
     lv_event_code_t event_code = lv_event_get_code(e);
 

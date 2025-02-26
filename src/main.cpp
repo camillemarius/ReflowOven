@@ -3,7 +3,7 @@
 
 #include "temperatur_sensor.h"
 #include "custom_ui.h"
-#include "pid.h"
+#include "reflowOvenControl.h"
 /*******************************************************************************
  * LVGL Widgets
  * This is a widgets demo for LVGL - Light and Versatile Graphics Library
@@ -217,6 +217,10 @@ void setup()
     
     ui_init();
 
+    initChart();
+
+    reflowControlInit();
+
 
     //----------------------------------------------------TEST CCH
     //pinMode(PIN_SCK, OUTPUT);  // Set pin 12 as output
@@ -234,10 +238,11 @@ void setup()
 
 
 void loop() {
+  const uint32_t GUI_UPDATE_INTERVAL = 10;    // Update GUI every 10ms
+  const uint32_t TEMP_UPDATE_INTERVAL = 1000; // Update temperature every 1000ms
   static unsigned long last_gui_update = 0;
   static unsigned long last_temp_update = 0;
-  const uint32_t GUI_UPDATE_INTERVAL = 10;  // Update GUI every 10ms
-  const uint32_t TEMP_UPDATE_INTERVAL = 1000; // Update temperature every 1000ms
+
 
   unsigned long current_time = millis();
 
@@ -249,35 +254,7 @@ void loop() {
 
   // Handle temperature updates
   if (current_time - last_temp_update >= TEMP_UPDATE_INTERVAL) {
-    //if(startReflowProcess == true) {
-    float temp = getTemperatur();
-
-    // Convert float to string only when needed
-    static float last_temp = -1000; // Ensure initial update
-    if (temp != last_temp) {
-      char temp_str[10];  
-      snprintf(temp_str, sizeof(temp_str), "%.1f°C", temp);
-      lv_label_set_text(ui_LaActualTemperature, temp_str);
-      last_temp = temp;
-    }
-    drawTemperaturePoint(temp);
-    //}
-    
-
-    //checkTemperature();
-    //----------------------------------------------------TEST CCH
-    //char temp_str[15];  
-    //snprintf(temp_str, sizeof(temp_str), "PIN_SCK: %d", digitalRead(PIN_SCK));
-    //lv_label_set_text(ui_LabelPreheat5, temp_str);
-
-    //snprintf(temp_str, sizeof(temp_str), "PIN_SO: %d", digitalRead(PIN_SO));
-    //lv_label_set_text(ui_LabelPreheat6, temp_str);
-
-    //digitalWrite(PIN_SCK, !digitalRead(PIN_SCK));  // Toggle state
-    //digitalWrite(PIN_SO, !digitalRead(PIN_SO));  // Toggle state
-    //digitalWrite(PIN_CS, !digitalRead(PIN_CS));  // Toggle state
-    //----------------------------------------------------TEST CCH
-
+    reflowControl();
     last_temp_update = current_time;
   }
 

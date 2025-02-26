@@ -7,7 +7,7 @@
 #include "profile_management.h"
 #include <stdio.h>
 #include "custom_ui.h"
-#include "pid.h"
+#include "reflowOvenControl.h"
 
 void EV_Key_Enter(lv_event_t * e)
 {
@@ -63,7 +63,10 @@ void EV_Key_Enter(lv_event_t * e)
 
 
 	
-	drawChart(saveNewProfile);
+	addTemperatureProfileToChart(saveNewProfile);
+
+	// Save choosen Reflow Profile to global variable
+	setActiveReflowOvenProfile(saveNewProfile);
 
 	_ui_screen_change(&ui_Reflow_Oven, LV_SCR_LOAD_ANIM_FADE_ON, 500, 0, &ui_Reflow_Oven_screen_init);
 	
@@ -72,8 +75,9 @@ void EV_Key_Enter(lv_event_t * e)
 void EV_Start_Reflow(lv_event_t * e)
 {
 	// Your code here
-	startReflowProcess = true;
+	startReflowProcess = !startReflowProcess;
 
+	setStartButtonBakgroundColor(startReflowProcess);
 }
 
 void EV_Set_Keyboard_Mode(lv_event_t * e)
@@ -217,7 +221,8 @@ void EV_Select_Saved_Profile(lv_event_t * e)
 	snprintf(temp_str, sizeof(temp_str), "Duration: %d sec", reflowProfile.cooldown_duration);
 	lv_label_set_text(ui_laCooldownDur, temp_str);
 
-	drawChart(reflowProfile);
+	addTemperatureProfileToChart(reflowProfile);
+	setActiveReflowOvenProfile(reflowProfile);
 }
 
 void EV_(lv_event_t * e)

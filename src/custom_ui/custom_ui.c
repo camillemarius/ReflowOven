@@ -2,11 +2,34 @@
 #include "profile_management.h"
 #include "ui/ui.h"
 
-void drawChart(ReflowProfile reflowProfile) {
+lv_obj_t* chart;
+static lv_chart_series_t* ui_Chart1_series_1;
+static lv_chart_series_t* ui_Chart1_series_2;
+
+
+
+//---------------------------------------------------------------------------------
+//-- CHART
+//---------------------------------------------------------------------------------
+void initChart(void) {
+    // Create and configure the chart
+    chart = ui_Chart1;
+    lv_chart_set_update_mode(chart, LV_CHART_UPDATE_MODE_CIRCULAR); // Ensure circular update
+    lv_chart_set_point_count(chart, 700); // Set a default max number of points
+
+    // Set chart range (adjust later dynamically)
+    lv_chart_set_range(chart, LV_CHART_AXIS_PRIMARY_Y, 0, 300);
+
+    // Create the series once during initialization
+    ui_Chart1_series_1 = lv_chart_add_series(chart, lv_color_hex(0x1879FB), LV_CHART_AXIS_PRIMARY_Y);
+    ui_Chart1_series_2 = lv_chart_add_series(chart, lv_color_hex(0xFF0000), LV_CHART_AXIS_PRIMARY_Y);
+}
+
+void addTemperatureProfileToChart(ReflowProfile reflowProfile) {
 	// Setup default graph (Chart)
 	
-	lv_obj_t* chart = ui_Chart1;
-	static lv_chart_series_t* ui_Chart1_series_1; // Declare the series
+	//lv_obj_t* chart = ui_Chart1;
+	//static lv_chart_series_t* ui_Chart1_series_1; // Declare the series
 	//static lv_coord_t time_steps[700];  // 7 steps to match the reflow profile stages
 
 	// 📌 Gesamtzeit des Reflow-Profils berechnen
@@ -103,24 +126,147 @@ void drawChart(ReflowProfile reflowProfile) {
     free(temp_values);
 }
 
-void initChart(void) {
+void addTemperaturePointToChart(int temp) {
+    //static lv_chart_series_t* temp_series = NULL; // Store the series referenc
 
-}
-
-
-void drawTemperaturePoint(int temp) {
-    static lv_chart_series_t* temp_series = NULL; // Store the series referenc
-
-    if (temp_series == NULL) {
+    if (ui_Chart1_series_2 == NULL) {
         // Create a new series if it doesn't exist
-        temp_series = lv_chart_add_series(ui_Chart1, lv_color_hex(0xFF0000), LV_CHART_AXIS_PRIMARY_Y);
-        // Modus so setzen, dass die Werte im Kreis aktualisiert werden (kein Verschieben nach links)
-        lv_chart_set_update_mode(ui_Chart1, LV_CHART_UPDATE_MODE_CIRCULAR);
+        ui_Chart1_series_2 = lv_chart_add_series(ui_Chart1, lv_color_hex(0xFF0000), LV_CHART_AXIS_PRIMARY_Y);
     }
 
     // Add the new temperature point to the series
-    lv_chart_set_next_value(ui_Chart1, temp_series, temp);
+    lv_chart_set_next_value(ui_Chart1, ui_Chart1_series_2, temp);
 
     // Refresh the chart to update the display
     lv_chart_refresh(ui_Chart1);
+}
+
+void deleteTemperatureSeries(void) {
+    if (ui_Chart1_series_2 != NULL) {
+        lv_chart_remove_series(ui_Chart1, ui_Chart1_series_2);
+        ui_Chart1_series_2 = NULL;
+        lv_chart_refresh(ui_Chart1);
+    }
+}
+
+//---------------------------------------------------------------------------------
+//-- Progress
+//---------------------------------------------------------------------------------
+void setIconStateBasedOnReflowPhase(ReflowPhases phase) {
+    
+    const char str_completed[] = "Completed";
+    const char str_in_progress[] = "in Progress";
+    const char str_pending[] = "Pending";
+
+    switch (phase)
+    {
+    case IDLE:
+        /* code */
+        lv_label_set_text(ui_LaPreheatStatus, str_completed);
+        lv_label_set_text(ui_LaSoakStatus, str_completed);
+        lv_label_set_text(ui_LaRampPeakStatus, str_completed);
+        lv_label_set_text(ui_LaReflowStatus, str_completed);
+        lv_label_set_text(ui_LaCooldownStatus, str_completed);
+
+        lv_img_set_src(ui_ImPreheatStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImSoakStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImRampPeakStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImReflowStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImCooldownStatus,&ui_img_check_png);
+
+    break;
+
+
+    case PREHEAT:
+        /* code */
+	    lv_label_set_text(ui_LaPreheatStatus, str_in_progress);
+	    lv_label_set_text(ui_LaSoakStatus, str_pending);
+	    lv_label_set_text(ui_LaRampPeakStatus, str_pending);
+	    lv_label_set_text(ui_LaReflowStatus, str_pending);
+	    lv_label_set_text(ui_LaCooldownStatus, str_pending);
+
+        lv_img_set_src(ui_ImPreheatStatus,&ui_img_running_png);
+        lv_img_set_src(ui_ImSoakStatus,&ui_img_watch3_png);
+        lv_img_set_src(ui_ImRampPeakStatus,&ui_img_watch3_png);
+        lv_img_set_src(ui_ImReflowStatus,&ui_img_watch3_png);
+        lv_img_set_src(ui_ImCooldownStatus,&ui_img_watch3_png);
+    break;
+
+        
+    case SOAK:
+    /* code */
+	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
+	    lv_label_set_text(ui_LaSoakStatus, str_in_progress);
+	    lv_label_set_text(ui_LaRampPeakStatus, str_pending);
+	    lv_label_set_text(ui_LaReflowStatus, str_pending);
+	    lv_label_set_text(ui_LaCooldownStatus, str_pending);
+
+        lv_img_set_src(ui_ImPreheatStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImSoakStatus,&ui_img_running_png);
+        lv_img_set_src(ui_ImRampPeakStatus,&ui_img_watch3_png);
+        lv_img_set_src(ui_ImReflowStatus,&ui_img_watch3_png);
+        lv_img_set_src(ui_ImCooldownStatus,&ui_img_watch3_png);
+    break;
+
+    
+    case RAMPPEAK:
+        /* code */
+	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
+	    lv_label_set_text(ui_LaSoakStatus, str_completed);
+	    lv_label_set_text(ui_LaRampPeakStatus, str_in_progress);
+	    lv_label_set_text(ui_LaReflowStatus, str_pending);
+	    lv_label_set_text(ui_LaCooldownStatus, str_pending);
+
+        lv_img_set_src(ui_ImPreheatStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImSoakStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImRampPeakStatus,&ui_img_running_png);
+        lv_img_set_src(ui_ImReflowStatus,&ui_img_watch3_png);
+        lv_img_set_src(ui_ImCooldownStatus,&ui_img_watch3_png);
+    break;
+
+        
+    case REFLOW:
+    /* code */
+	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
+	    lv_label_set_text(ui_LaSoakStatus, str_completed);
+	    lv_label_set_text(ui_LaRampPeakStatus, str_completed);
+	    lv_label_set_text(ui_LaReflowStatus, str_in_progress);
+	    lv_label_set_text(ui_LaCooldownStatus, str_pending);
+
+        lv_img_set_src(ui_ImPreheatStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImSoakStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImRampPeakStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImReflowStatus,&ui_img_running_png);
+        lv_img_set_src(ui_ImCooldownStatus,&ui_img_watch3_png);
+    break;
+    
+
+    case COOLDOWN:
+    /* code */
+	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
+	    lv_label_set_text(ui_LaSoakStatus, str_completed);
+	    lv_label_set_text(ui_LaRampPeakStatus, str_completed);
+	    lv_label_set_text(ui_LaReflowStatus, str_completed);
+	    lv_label_set_text(ui_LaCooldownStatus, str_in_progress);
+
+        lv_img_set_src(ui_ImPreheatStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImSoakStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImRampPeakStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImReflowStatus,&ui_img_check_png);
+        lv_img_set_src(ui_ImCooldownStatus,&ui_img_running_png);
+    break;
+
+    default:
+        break;
+    }
+}
+
+void setStartButtonBakgroundColor(bool start) {
+    if(start == true) {
+        lv_obj_set_style_bg_color(ui_BuStartReflow, lv_color_hex(0xFF0000), LV_PART_MAIN); // Red background
+        lv_label_set_text(ui_BuStartReflowText, "Stop");
+    }else {
+        lv_obj_set_style_bg_color(ui_BuStartReflow, lv_color_hex(0x1879FB), LV_PART_MAIN); // Blue background
+        lv_label_set_text(ui_BuStartReflowText, "Start");
+    }
 }

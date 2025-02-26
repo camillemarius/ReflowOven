@@ -7,8 +7,21 @@ extern "C" {
 #include "Arduino.h"
 #include "profile_management.h"
 
-void drawChart(ReflowProfile reflowProfile);
-void drawTemperaturePoint(int temp);
+typedef enum {
+    IDLE,
+    PREHEAT,
+    SOAK,
+    RAMPPEAK,
+    REFLOW,
+    COOLDOWN
+} ReflowPhases;
+
+void initChart(void);
+void addTemperatureProfileToChart(ReflowProfile reflowProfile);
+void addTemperaturePointToChart(int temp);
+void deleteTemperatureSeries(void);
+void setIconStateBasedOnReflowPhase(ReflowPhases phase);
+void setStartButtonBakgroundColor(bool start);
 
 #ifdef __cplusplus
 }
