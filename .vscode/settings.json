@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "profile_management.h": "c",
+        "max6675.h": "c"
+    }
+}
