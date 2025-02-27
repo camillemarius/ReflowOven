@@ -1,16 +1,41 @@
-#include "reflowOvenControl.h"
-#include "PID_SSR.h"
+/**
+ * @file  reflowOvenControl.cpp
+ * @brief Manages the reflow oven control process by determining the current phase
+ *        based on the temperature and updating the system state accordingly.
+ * 
+ * This code includes functions to initialize the reflow control system, set the active
+ * reflow oven profile, and process the reflow state. It transitions through different
+ * phases of the reflow process (IDLE, PREHEAT, SOAK, RAMPPEAK, REFLOW, COOLDOWN)
+ * based on temperature readings and time durations specified in the active profile.
+ * The system updates the PID controller's reference temperature and manages UI elements
+ * to reflect the current state of the reflow process.
+ */
 
+
+/* Includes ------------------------------------------------------------------*/
+#include "reflow_oven_control.h"
+#include "pid_ssr.h"
+
+/* Private typedef -----------------------------------------------------------*/
+
+
+/* Private define ------------------------------------------------------------*/
+
+
+/* Private macro -------------------------------------------------------------*/
+
+
+/* Private variables ---------------------------------------------------------*/
 static ReflowProfile  activeProfile;
 static ReflowPhases   activReflowPhase = IDLE;
 
 bool startReflowProcess = false;  // Definition
 
-void setActiveReflowOvenProfile(ReflowProfile profile) {
-  activeProfile = profile;
-}
+/* Private function prototypes -----------------------------------------------*/
 
-void determineReflowOvenPhase(int temp) {
+
+/* Private user code ---------------------------------------------------------*/
+static void determineReflowOvenPhase(int temp) {
   
   static unsigned long phaseStartTime = 0;
 
@@ -23,7 +48,7 @@ void determineReflowOvenPhase(int temp) {
 
   case PREHEAT:
     /* code */
-    pid_setRefTemperature(activeProfile.soak_temp);
+    pid_setReferenceTemperature(activeProfile.soak_temp);
     if(temp >= activeProfile.soak_temp) {
       phaseStartTime = millis();  // Start the timer for the SOAK phase
       activReflowPhase = SOAK;
@@ -32,7 +57,7 @@ void determineReflowOvenPhase(int temp) {
 
   case SOAK:
     /* code */
-    pid_setRefTemperature(activeProfile.soak_temp);
+    pid_setReferenceTemperature(activeProfile.soak_temp);
     if (millis() - phaseStartTime >= (activeProfile.soak_duration*1000)) {
       phaseStartTime = 0;
       activReflowPhase = RAMPPEAK;
@@ -41,7 +66,7 @@ void determineReflowOvenPhase(int temp) {
 
   case RAMPPEAK:
     /* code */
-    pid_setRefTemperature(activeProfile.reflow_temp);
+    pid_setReferenceTemperature(activeProfile.reflow_temp);
     if(temp >= activeProfile.reflow_temp) {
       phaseStartTime = millis();  // Start the timer for the SOAK phase
       activReflowPhase = REFLOW;
@@ -50,7 +75,7 @@ void determineReflowOvenPhase(int temp) {
 
   case REFLOW:
     /* code */
-    pid_setRefTemperature(activeProfile.reflow_temp);
+    pid_setReferenceTemperature(activeProfile.reflow_temp);
     if (millis() - phaseStartTime >= (activeProfile.reflow_duration*1000)) {
       phaseStartTime = 0;
       activReflowPhase = COOLDOWN;
@@ -59,7 +84,7 @@ void determineReflowOvenPhase(int temp) {
 
   case COOLDOWN:
     /* code */
-    pid_setRefTemperature(activeProfile.cooldown_temp);
+    pid_setReferenceTemperature(activeProfile.cooldown_temp);
     if(temp <= activeProfile.cooldown_temp) {
       //startReflowProcess = false;
       activReflowPhase = IDLE;
@@ -71,12 +96,12 @@ void determineReflowOvenPhase(int temp) {
   }
 }
 
-void processReflowState(int temp, bool start) {
+static void processReflowState(int temp, bool start) {
   static bool wasReflowActive = true;  // Tracks if reflow process was active before
 
   if (start) {
       determineReflowOvenPhase(temp);
-      pid_updateControl(temp);
+      pid_updateTemperature(temp);
 
       setIconStateBasedOnReflowPhase(activReflowPhase);
       addTemperaturePointToChart(temp);
@@ -85,8 +110,8 @@ void processReflowState(int temp, bool start) {
   else if (wasReflowActive) {  
       // Only call deleteTemperatureSeries() once when transitioning from true → false
       activReflowPhase = IDLE;
-      pid_setRefTemperature(0);
-      pid_updateControl(temp);
+      pid_setReferenceTemperature(0);
+      pid_updateTemperature(temp);
       setIconStateBasedOnReflowPhase(activReflowPhase);
       setStartButtonBakgroundColor(start);
       deleteTemperatureSeries();
@@ -94,8 +119,15 @@ void processReflowState(int temp, bool start) {
   }
 }
 
-  
-void reflowControl(void) {
+void reflowControlInit(void) {
+  pid_init();
+}
+
+void setActiveReflowOvenProfile(ReflowProfile profile) {
+  activeProfile = profile;
+}
+
+void reflowControlTask(void) {
   // Read Temperature
   float temp = getTemperatur();
 
@@ -108,6 +140,4 @@ void reflowControl(void) {
   processReflowState(temp, startReflowProcess);
 }
 
-void reflowControlInit(void) {
-  pid_setup();
-}
+

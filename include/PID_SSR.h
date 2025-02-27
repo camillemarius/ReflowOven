@@ -26,9 +26,9 @@ extern PID myPID;
 #define PWM_CHANNEL 0       // PWM channel (0-15)
 
 
-void pid_setup();
-void pid_updateControl(double temperature);
-void pid_setRefTemperature(double temperature);
+void pid_init();
+void pid_updateTemperature(double temperature);
+void pid_setReferenceTemperature(double temperature);
 
 
 #ifdef __cplusplus

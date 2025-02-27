@@ -1,6 +1,28 @@
-#include "PID_SSR.h"  // Include your header file
+/**
+ * @file pid_ssr.cpp
+ * @brief This file contains the implementation of a PID controller for temperature regulation using a Solid State Relay (SSR).
+ *
+ * The code initializes and manages a PID controller to maintain a desired temperature setpoint. It uses PWM to control
+ * the SSR, which in turn regulates the power to a heating element. The PID controller is configured with specific tuning
+ * parameters (Kp, Ki, Kd) and operates in automatic mode. The functions provided allow for initialization, updating the
+ * current temperature, and setting a new reference temperature.
+ *
+ */
 
-#include <Arduino.h>   // Ensure Arduino functions like pinMode, ledcSetup, etc. are available
+/* Includes ------------------------------------------------------------------*/
+#include "pid_ssr.h"
+#include <Arduino.h>
+
+/* Private typedef -----------------------------------------------------------*/
+
+
+/* Private define ------------------------------------------------------------*/
+
+
+/* Private macro -------------------------------------------------------------*/
+
+
+/* Private variables ---------------------------------------------------------*/
 
 // Pin Definitions
 const int SSR_PIN = 17;        // Solid State Relay control pin
@@ -16,8 +38,12 @@ double output = 0.0;        // Output to SSR (0-255)
 // Define the PID object
 PID myPID(&input_pid, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 
-// Define the setup function for the PID controller
-void pid_setup() {
+/* Private function prototypes -----------------------------------------------*/
+
+
+/* Private user code ---------------------------------------------------------*/
+
+void pid_init() {
   // Set SSR_PIN as an output pin
   pinMode(SSR_PIN, OUTPUT);
 
@@ -32,8 +58,7 @@ void pid_setup() {
   myPID.SetOutputLimits(0, 255);  // Output limits for PWM control
 }
 
-// Define the function to calculate the PID output based on the temperature
-void pid_updateControl(double temperature) {
+void pid_updateTemperature(double temperature) {
   input_pid = temperature;
   
   // Run the PID controller to adjust the output
@@ -43,7 +68,6 @@ void pid_updateControl(double temperature) {
   ledcWrite(PWM_CHANNEL, output);
 }
 
-
-void pid_setRefTemperature(double temperature) {
+void pid_setReferenceTemperature(double temperature) {
     setpoint = temperature;
 }

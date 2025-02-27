@@ -1,12 +1,27 @@
-#include "custom_ui.h"
-#include "profile_management.h"
+
+/* Includes ------------------------------------------------------------------*/
+#include "lvgl_custom_ui.h"
+#include "memory_profile_management.h"
 #include "ui/ui.h"
 
+/* Private typedef -----------------------------------------------------------*/
+
+
+/* Private define ------------------------------------------------------------*/
+
+
+/* Private macro -------------------------------------------------------------*/
+
+
+/* Private variables ---------------------------------------------------------*/
 lv_obj_t* chart;
 static lv_chart_series_t* ui_Chart1_series_1;
 static lv_chart_series_t* ui_Chart1_series_2;
 
+/* Private function prototypes -----------------------------------------------*/
 
+
+/* Private user code ---------------------------------------------------------*/
 
 //---------------------------------------------------------------------------------
 //-- CHART
@@ -26,11 +41,7 @@ void initChart(void) {
 }
 
 void addTemperatureProfileToChart(ReflowProfile reflowProfile) {
-	// Setup default graph (Chart)
-	
-	//lv_obj_t* chart = ui_Chart1;
-	//static lv_chart_series_t* ui_Chart1_series_1; // Declare the series
-	//static lv_coord_t time_steps[700];  // 7 steps to match the reflow profile stages
+
 
 	// 📌 Gesamtzeit des Reflow-Profils berechnen
 	int TOTAL_SECONDS = 0;
@@ -106,12 +117,6 @@ void addTemperatureProfileToChart(ReflowProfile reflowProfile) {
         temp_values[index] = temp_values[index - 1];
         index++;
     }
-
-	//------------------------------------------------------------------------------------DEBUG
-	//char debug_str[50];  // Buffer to hold the string representation
-	//snprintf(debug_str, sizeof(debug_str), "time[%d,%d,%d,%d,%d,%d]", time_steps[0],time_steps[1],time_steps[2],time_steps[3],time_steps[4],time_steps[5]);
-	//lv_label_set_text(ui_LabelPreheat5, debug_str);
-	//------------------------------------------------------------------------------------DEBUG
  
 	lv_chart_set_range(ui_Chart1, LV_CHART_AXIS_PRIMARY_Y, 0, reflowProfile.reflow_temp + 10);
 
@@ -127,8 +132,6 @@ void addTemperatureProfileToChart(ReflowProfile reflowProfile) {
 }
 
 void addTemperaturePointToChart(int temp) {
-    //static lv_chart_series_t* temp_series = NULL; // Store the series referenc
-
     if (ui_Chart1_series_2 == NULL) {
         // Create a new series if it doesn't exist
         ui_Chart1_series_2 = lv_chart_add_series(ui_Chart1, lv_color_hex(0xFF0000), LV_CHART_AXIS_PRIMARY_Y);
@@ -161,7 +164,6 @@ void setIconStateBasedOnReflowPhase(ReflowPhases phase) {
     switch (phase)
     {
     case IDLE:
-        /* code */
         lv_label_set_text(ui_LaPreheatStatus, str_completed);
         lv_label_set_text(ui_LaSoakStatus, str_completed);
         lv_label_set_text(ui_LaRampPeakStatus, str_completed);
@@ -178,7 +180,6 @@ void setIconStateBasedOnReflowPhase(ReflowPhases phase) {
 
 
     case PREHEAT:
-        /* code */
 	    lv_label_set_text(ui_LaPreheatStatus, str_in_progress);
 	    lv_label_set_text(ui_LaSoakStatus, str_pending);
 	    lv_label_set_text(ui_LaRampPeakStatus, str_pending);
@@ -194,7 +195,6 @@ void setIconStateBasedOnReflowPhase(ReflowPhases phase) {
 
         
     case SOAK:
-    /* code */
 	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
 	    lv_label_set_text(ui_LaSoakStatus, str_in_progress);
 	    lv_label_set_text(ui_LaRampPeakStatus, str_pending);
@@ -210,7 +210,6 @@ void setIconStateBasedOnReflowPhase(ReflowPhases phase) {
 
     
     case RAMPPEAK:
-        /* code */
 	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
 	    lv_label_set_text(ui_LaSoakStatus, str_completed);
 	    lv_label_set_text(ui_LaRampPeakStatus, str_in_progress);
@@ -226,7 +225,6 @@ void setIconStateBasedOnReflowPhase(ReflowPhases phase) {
 
         
     case REFLOW:
-    /* code */
 	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
 	    lv_label_set_text(ui_LaSoakStatus, str_completed);
 	    lv_label_set_text(ui_LaRampPeakStatus, str_completed);
@@ -242,7 +240,6 @@ void setIconStateBasedOnReflowPhase(ReflowPhases phase) {
     
 
     case COOLDOWN:
-    /* code */
 	    lv_label_set_text(ui_LaPreheatStatus, str_completed);
 	    lv_label_set_text(ui_LaSoakStatus, str_completed);
 	    lv_label_set_text(ui_LaRampPeakStatus, str_completed);

@@ -25,7 +25,7 @@ bool saveProfile(ReflowProfile newProfile);
 void deleteProfile(int index);
 bool getProfile(ReflowProfile *profile, int index);
 int getProfileCount(void);
-bool loadProfiles();
+void loadProfiles();
 void clearProfiles();
 bool updateLocalProfileCount(void);
 

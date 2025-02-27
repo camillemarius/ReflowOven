@@ -1,16 +1,37 @@
+/**
+ * @file memory_profile_management.c
+ * @brief Manages reflow profiles using Non-Volatile Storage (NVS).
+ *
+ * This module provides functions to manage reflow profiles, including
+ * saving, loading, updating, deleting, and clearing profiles stored in
+ * NVS. It supports a maximum of 5 profiles and includes functionality
+ * to check for existing profiles and retrieve profile information.
+ */
+
+/* Includes ------------------------------------------------------------------*/
 #include <stdio.h>
 #include <string.h>
 #include <nvs.h>
 #include <nvs_flash.h>
-#include "profile_management.h"
+#include "memory_profile_management.h"
+
+/* Private typedef -----------------------------------------------------------*/
 
 
-
-// Globale Variablen für Profile
+/* Private define ------------------------------------------------------------*/
 #define MAX_PROFILES 5                 // Maximale Anzahl von Profilen
+
+/* Private macro -------------------------------------------------------------*/
+
+
+/* Private variables ---------------------------------------------------------*/
 ReflowProfile profiles[MAX_PROFILES];   // Alle gespeicherten Profile
 int profile_count = 0;                  // Anzahl gespeicherter Profile
 
+/* Private function prototypes -----------------------------------------------*/
+
+
+/* Private user code ---------------------------------------------------------*/
 
 bool updateLocalProfileCount(void) {
     // Open NVS for reading
@@ -35,7 +56,7 @@ bool updateLocalProfileCount(void) {
     return true;
 }
 
-// 🔍 **Check if a profile already exists**
+// **Check if a profile already exists**
 bool profileExists(const char *profileName) {
     for (int i = 0; i < profile_count; i++) {
         if (strcmp(profiles[i].profile_Name, profileName) == 0) {
@@ -45,7 +66,7 @@ bool profileExists(const char *profileName) {
     return false;
 }
 
-// ✏ **Overwrite an existing profile**
+// **Overwrite an existing profile**
 void overwriteProfile(ReflowProfile newProfile) {
     for (int i = 0; i < profile_count; i++) {
         if (strcmp(profiles[i].profile_Name, newProfile.profile_Name) == 0) {
@@ -159,14 +180,14 @@ bool getProfile(ReflowProfile *profile, int index) {
 }
 
 // **Lade alle Profile aus NVS**
-bool loadProfiles() {
+void loadProfiles() {
     nvs_handle_t my_handle;
     esp_err_t err;
 
     err = nvs_open("reflow", NVS_READONLY, &my_handle);
     if (err != ESP_OK) {
         //printf("NVS öffnen fehlgeschlagen!\n");
-        return false;
+        //return false;
     }
 
     // Lade Anzahl der Profile
@@ -174,7 +195,7 @@ bool loadProfiles() {
     err = nvs_get_i32(my_handle, "profile_count", &profile_count);
     if (err != ESP_OK) {
         profile_count = 0; // Falls nichts gespeichert wurde
-        return false;
+        //return false;
     }
 
     // Lade gespeicherte Profile
@@ -182,11 +203,11 @@ bool loadProfiles() {
     err = nvs_get_blob(my_handle, "profiles", profiles, &size);
     if (err != ESP_OK) {
         //printf("Keine gespeicherten Profile gefunden.\n");
-        return false;
+        //return false;
     }
 
     nvs_close(my_handle);
-    return true;
+    //return true;
 }
 
 // **Löscht alle Profile**

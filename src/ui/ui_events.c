@@ -4,10 +4,10 @@
 // Project name: SquareLine_Project
 
 #include "ui.h"
-#include "profile_management.h"
+#include "memory_profile_management.h"
 #include <stdio.h>
-#include "custom_ui.h"
-#include "reflowOvenControl.h"
+#include "lvgl_custom_ui.h"
+#include "reflow_oven_control.h"
 
 void EV_Key_Enter(lv_event_t * e)
 {

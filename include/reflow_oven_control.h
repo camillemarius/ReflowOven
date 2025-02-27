@@ -3,24 +3,22 @@
 
 
 #include "Arduino.h"
-#include "custom_ui.h"
+#include "lvgl_custom_ui.h"
 #include "ui/ui.h"
-#include "profile_management.h"
+#include "memory_profile_management.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "temperatur_sensor.h"
+#include "sensor_temperature.h"
 
 
 extern bool startReflowProcess;
 
 // C functions can be declared here if necessary
-void determineReflowOvenPhase(int temp);
 void setActiveReflowOvenProfile(ReflowProfile profile);
-void processReflowState(int temp, bool start);
-void reflowControl(void);
+void reflowControlTask(void);
 void reflowControlInit(void);
 
 #ifdef __cplusplus

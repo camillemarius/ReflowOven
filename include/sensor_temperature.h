@@ -1,5 +1,5 @@
-#ifndef TEMPERATUR_SENSOR_H
-#define TEMPERATUR_SENSOR_H
+#ifndef sensor_temperature_H
+#define sensor_temperature_H
 
 #include "Arduino.h"
 

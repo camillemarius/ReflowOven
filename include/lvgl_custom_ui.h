@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 #include "Arduino.h"
-#include "profile_management.h"
+#include "memory_profile_management.h"
 
 typedef enum {
     IDLE,
