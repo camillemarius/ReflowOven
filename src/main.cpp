@@ -26,19 +26,13 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-
+const uint32_t GUI_UPDATE_INTERVAL = 10;    // Update GUI every 10ms
+const uint32_t TEMP_UPDATE_INTERVAL = 1000; // Update temperature every 1000ms
 
 /* Private function prototypes -----------------------------------------------*/
 
 
 /* Private user code ---------------------------------------------------------*/
-
-
-
-
-// Constants for update intervals
-const uint32_t GUI_UPDATE_INTERVAL = 10;    // Update GUI every 10ms
-const uint32_t TEMP_UPDATE_INTERVAL = 1000; // Update temperature every 1000ms
 
 /**
  * @brief Setup function for initializing the system.
