@@ -129,7 +129,7 @@ void setActiveReflowOvenProfile(ReflowProfile profile) {
 
 void reflowControlTask(void) {
   // Read Temperature
-  float temp = getTemperatur();
+  float temp = getTemperature();
 
   // Print Temperture periodically
   char temp_str[10];  

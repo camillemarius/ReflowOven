@@ -14,7 +14,8 @@ extern "C" {
 #endif
 
 // C functions can be declared here if necessary
-float getTemperatur();
+float getTemperature(void);
+void addTemperatureToFilter(void);
 
 #ifdef __cplusplus
 }

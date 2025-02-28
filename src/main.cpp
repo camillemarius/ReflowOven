@@ -15,6 +15,7 @@
 #include "lvgl_init.h"
 #include "memory_profile_management.h"
 #include "reflow_oven_control.h"
+#include "sensor_temperature.h"
 
 /* Private typedef -----------------------------------------------------------*/
 
@@ -26,8 +27,9 @@
 
 
 /* Private variables ---------------------------------------------------------*/
-const uint32_t GUI_UPDATE_INTERVAL = 10;    // Update GUI every 10ms
-const uint32_t TEMP_UPDATE_INTERVAL = 1000; // Update temperature every 1000ms
+const uint32_t GUI_UPDATE_INTERVAL = 10;    
+const uint32_t REFLOW_UPDATE_INTERVAL = 1000; 
+const uint32_t TEMP_UPDATE_INTERVAL = 500;
 
 /* Private function prototypes -----------------------------------------------*/
 
@@ -60,6 +62,7 @@ void setup()
 void loop() {
   static unsigned long last_gui_update = 0;
   static unsigned long last_temp_update = 0;
+  static unsigned long last_reflow_update = 0;
 
   unsigned long current_time = millis();
 
@@ -71,8 +74,14 @@ void loop() {
 
   // Handle temperature updates
   if (current_time - last_temp_update >= TEMP_UPDATE_INTERVAL) {
-    reflowControlTask();
+    addTemperatureToFilter();
     last_temp_update = current_time;
+  }
+
+  // Handle temperature updates
+  if (current_time - last_reflow_update >= REFLOW_UPDATE_INTERVAL) {
+    reflowControlTask();
+    last_reflow_update = current_time;
   }
 
   delay(5);
